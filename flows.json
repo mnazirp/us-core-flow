@@ -1276,8 +1276,8 @@
     {
         "id": "e907ba5364e5896f",
         "type": "amqp-server",
-        "host": "10.88.199.148",
-        "port": "5630",
+        "host": "${BROKER_DOMAIN}",
+        "port": "${BROKER_PORT}",
         "vhost": "",
         "keepalive": "30",
         "usetls": false,
