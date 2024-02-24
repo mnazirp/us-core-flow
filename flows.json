@@ -1276,7 +1276,7 @@
     {
         "id": "e907ba5364e5896f",
         "type": "amqp-server",
-        "host": "localhost",
+        "host": "10.88.199.148",
         "port": "5630",
         "vhost": "",
         "keepalive": "30",
