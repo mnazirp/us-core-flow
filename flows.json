@@ -11821,7 +11821,7 @@
         "y": 160,
         "wires": [
             [
-                "64c0a97588c1b892"
+                "3cdc106f1f3ace69"
             ]
         ]
     },
@@ -14328,7 +14328,7 @@
         "y": 540,
         "wires": [
             [
-                "02d1a19d80257744"
+                "acc35c4facd45e37"
             ]
         ]
     },
@@ -14340,9 +14340,7 @@
         "x": 170,
         "y": 580,
         "wires": [
-            [
-                "acc35c4facd45e37"
-            ]
+            []
         ]
     },
     {
@@ -14353,9 +14351,7 @@
         "x": 170,
         "y": 200,
         "wires": [
-            [
-                "3cdc106f1f3ace69"
-            ]
+            []
         ]
     },
     {
@@ -17723,7 +17719,7 @@
         "y": 280,
         "wires": [
             [
-                "efb6fd3e21e2e6a0"
+                "2cc36b53281ba6eb"
             ]
         ]
     },
@@ -17833,7 +17829,7 @@
         "y": 40,
         "wires": [
             [
-                "4cec475fbe6a60e0"
+                "4f453f7443b1bdba"
             ]
         ]
     },
@@ -17914,7 +17910,7 @@
         "y": 640,
         "wires": [
             [
-                "af0e4b4a5deffc93"
+                "5d1d1785d97cfd03"
             ]
         ]
     },
@@ -17991,7 +17987,7 @@
         "y": 960,
         "wires": [
             [
-                "30e937a22f8c77ba"
+                "55ab8873929c560e"
             ]
         ]
     },
@@ -18132,7 +18128,7 @@
         "y": 1140,
         "wires": [
             [
-                "bfb1ad74f5b90332"
+                "5f26c7e45011f372"
             ]
         ]
     },
@@ -18209,7 +18205,7 @@
         "y": 1360,
         "wires": [
             [
-                "3c8c497bc0926532"
+                "2f8f9bba77106467"
             ]
         ]
     },
@@ -19305,7 +19301,7 @@
         "y": 1600,
         "wires": [
             [
-                "91f5634482ee9507"
+                "85e17e6d5d5a7128"
             ]
         ]
     },
@@ -20705,9 +20701,7 @@
         "x": 170,
         "y": 80,
         "wires": [
-            [
-                "4f453f7443b1bdba"
-            ]
+            []
         ]
     },
     {
@@ -20718,9 +20712,7 @@
         "x": 170,
         "y": 320,
         "wires": [
-            [
-                "2cc36b53281ba6eb"
-            ]
+            []
         ]
     },
     {
@@ -20731,9 +20723,7 @@
         "x": 170,
         "y": 680,
         "wires": [
-            [
-                "5d1d1785d97cfd03"
-            ]
+            []
         ]
     },
     {
@@ -20744,9 +20734,7 @@
         "x": 230,
         "y": 1000,
         "wires": [
-            [
-                "55ab8873929c560e"
-            ]
+            []
         ]
     },
     {
@@ -20757,9 +20745,7 @@
         "x": 190,
         "y": 1180,
         "wires": [
-            [
-                "5f26c7e45011f372"
-            ]
+            []
         ]
     },
     {
@@ -20770,9 +20756,7 @@
         "x": 190,
         "y": 1400,
         "wires": [
-            [
-                "2f8f9bba77106467"
-            ]
+            []
         ]
     },
     {
@@ -20783,9 +20767,7 @@
         "x": 230,
         "y": 1640,
         "wires": [
-            [
-                "85e17e6d5d5a7128"
-            ]
+            []
         ]
     },
     {
@@ -22960,7 +22942,7 @@
         "type": "function",
         "z": "b5ec5e315779d1ba",
         "name": "spawn data",
-        "func": "let counter = 0;\nlet payload = msg.payload;\nsplit();\nreturn null;\nfunction split() {\n    if (counter < payload.length) {\n        node.send({\n            payload: payload[counter]\n        });\n        counter++;\n        setTimeout(split, 3 * 1000);\n    }\n}",
+        "func": "let counter = 0;\nlet payload = msg.payload;\nsplit();\nreturn null;\nfunction split() {\n    if (counter < payload.length) {\n        node.send({\n            payload: payload[counter].payload\n        });\n        counter++;\n        setTimeout(split, 3 * 1000);\n    }\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -23040,7 +23022,7 @@
         "type": "function",
         "z": "b5ec5e315779d1ba",
         "name": "create keys series",
-        "func": "const redisTS = global.get('redisTS');\nlet existingKeys = msg.payload;\nlet payload = msg.ori.data;\nlet suffix = ['vehicleStatus', 'odometer', 'engineHours', 'longitude', 'latitude', 'altitude',\n    'heading', 'speed', 'positionDatetime', 'createdDatetime', 'printedTimezone'];\nlet vehicleStatusOptions = ['OFF', 'ON', 'MOVING', 'IDDLE'];\n\nlet needToCreate = [];\nlet needToAdd = [];\nfor (const rec of payload) {\n    if (needToCreate.length == 0 || needToCreate.some(x => x.vin != rec.vin)) {\n        needToCreate.push({\n            vin: `${rec.vin}`,\n            createPayload: suffix.map(suf => {\n                return {\n                    key: `${rec.vin}:${suf}`,\n                    retention: 0,\n                    duplicatePolicy: 'LAST',\n                    labels: ['type', 'vehicle-position', 'vin', rec.vin, 'topic', suf],\n                    encoding: 'UNCOMPRESSED'\n                }\n            })\n        });\n    }\n    needToAdd.push({\n        key: `${rec.vin}:vehicleStatus`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: vehicleStatusOptions.indexOf(rec.vehiclestatus).toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:odometer`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.odometer) ? parseFloat(rec.odometer).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:engineHours`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.enginehours) ? parseFloat(rec.enginehours).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:longitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: rec.longitude.toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:latitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: rec.latitude.toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:altitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.altitude) ? parseFloat(rec.altitude).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:heading`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.heading) ? parseFloat(rec.heading).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:speed`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.speed) ? parseFloat(rec.speed).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:positionDatetime`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.positiondatetime).getTime().toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:createdDatetime`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.createddatetime).getTime().toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:printedTimezone`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.printed_timezone).getTime().toString()\n    });\n}\nlet keys = [].concat(needToCreate.map(x => x.createPayload)).flat().map(innerArray => innerArray);\nmsg.create = keys.filter(x => !existingKeys.includes(x.key));\nmsg.needToAdd = needToAdd;\nredisTS.tsCreate(msg.create).then(x => {\n    msg.payload = x;\n    node.send(msg);\n});\nreturn null;",
+        "func": "const redisTS = global.get('redisTS');\nlet existingKeys = msg.payload;\nlet payload = msg.ori;\nlet suffix = ['vehicleStatus', 'odometer', 'engineHours', 'longitude', 'latitude', 'altitude',\n    'heading', 'speed', 'positionDatetime', 'createdDatetime', 'printedTimezone'];\nlet vehicleStatusOptions = ['OFF', 'ON', 'MOVING', 'IDDLE'];\n\nlet needToCreate = [];\nlet needToAdd = [];\nnode.warn(payload);\nfor (const rec of payload) {\n    if (needToCreate.length == 0 || needToCreate.some(x => x.vin != rec.vin)) {\n        needToCreate.push({\n            vin: `${rec.vin}`,\n            createPayload: suffix.map(suf => {\n                return {\n                    key: `${rec.vin}:${suf}`,\n                    retention: 0,\n                    duplicatePolicy: 'LAST',\n                    labels: ['type', 'vehicle-position', 'vin', rec.vin, 'topic', suf],\n                    encoding: 'UNCOMPRESSED'\n                }\n            })\n        });\n    }\n    needToAdd.push({\n        key: `${rec.vin}:vehicleStatus`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: vehicleStatusOptions.indexOf(rec.vehiclestatus).toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:odometer`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.odometer) ? parseFloat(rec.odometer).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:engineHours`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.enginehours) ? parseFloat(rec.enginehours).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:longitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: rec.longitude.toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:latitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: rec.latitude.toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:altitude`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.altitude) ? parseFloat(rec.altitude).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:heading`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.heading) ? parseFloat(rec.heading).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:speed`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: (rec.speed) ? parseFloat(rec.speed).toString() : null\n    });\n    needToAdd.push({\n        key: `${rec.vin}:positionDatetime`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.positiondatetime).getTime().toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:createdDatetime`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.createddatetime).getTime().toString()\n    });\n    needToAdd.push({\n        key: `${rec.vin}:printedTimezone`,\n        timestamp: new Date(rec.printed_timezone).getTime().toString(),\n        value: new Date(rec.printed_timezone).getTime().toString()\n    });\n}\nlet keys = [].concat(needToCreate.map(x => x.createPayload)).flat().map(innerArray => innerArray);\nmsg.create = keys.filter(x => !existingKeys.includes(x.key));\nmsg.needToAdd = needToAdd;\nredisTS.tsCreate(msg.create).then(x => {\n    msg.payload = x;\n    node.send(msg);\n});\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
