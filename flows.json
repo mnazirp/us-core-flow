@@ -1264,9 +1264,7 @@
             "d6165c1f299c9aee"
         ],
         "x": 54,
-        "y": 59,
-        "w": 1172,
-        "h": 382
+        "y": 59
     },
     {
         "id": "6d7edd2a27c9db5e",
@@ -1308,9 +1306,7 @@
             "1ce86caf3c677ddf"
         ],
         "x": 14,
-        "y": 39,
-        "w": 1172,
-        "h": 402
+        "y": 39
     },
     {
         "id": "784d89e62dfb5070",
@@ -22448,6 +22444,125 @@
         ]
     },
     {
+        "id": "9851e62d84ba1b29",
+        "type": "function",
+        "z": "d27f5b11c2fa7b08",
+        "name": "dates",
+        "func": "let counter = 0;\nlet payload = [\n];\npayload.push(formatDate(new Date));\n\nsplit();\nreturn null;\n\nfunction split() {\n    if (counter < payload.length) {\n        node.send({\n            payload: payload[counter]\n        });\n        counter++;\n        setTimeout(split, 1000);\n    }\n}\n\nfunction formatDate(date) {\n    const year = date.getFullYear();\n    const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding 1 because getMonth returns zero-based index\n    const day = String(date.getDate()).padStart(2, '0');\n    return `${year}-${month}-${day}`;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 1360,
+        "wires": [
+            [
+                "50ddafd018a23cf6"
+            ]
+        ]
+    },
+    {
+        "id": "50ddafd018a23cf6",
+        "type": "function",
+        "z": "d27f5b11c2fa7b08",
+        "name": "smart-bucket hino position",
+        "func": "let date  = msg.payload;\nmsg.sub = {\n    database: 'smart-bucket',\n    design: 'position',\n    view: 'hino',\n    key: [date]\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 1400,
+        "wires": [
+            [
+                "69575f75d3ea4c3b"
+            ]
+        ]
+    },
+    {
+        "id": "69575f75d3ea4c3b",
+        "type": "subflow:d7ccf53b2b9fe097",
+        "z": "d27f5b11c2fa7b08",
+        "name": "",
+        "x": 360,
+        "y": 1440,
+        "wires": [
+            [
+                "f55dae1ec0470854"
+            ]
+        ]
+    },
+    {
+        "id": "f55dae1ec0470854",
+        "type": "function",
+        "z": "d27f5b11c2fa7b08",
+        "name": "function 130",
+        "func": "let payload = [];\nlet counter = 0;\nlet data = msg.sub.rows.map(x => x.value);\nmsg.payload = data;\nmsg.headers = {\n    \"x-arguments\": JSON.stringify({ \"x-message-ttl\": 10000 })\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 1480,
+        "wires": [
+            [
+                "8490365266b80667"
+            ]
+        ]
+    },
+    {
+        "id": "8490365266b80667",
+        "type": "amqp out",
+        "z": "d27f5b11c2fa7b08",
+        "name": "",
+        "routingkey": "",
+        "iotype": "4",
+        "ioname": "job.tracking.vehicle.position",
+        "server": "e907ba5364e5896f",
+        "x": 680,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "0355f97705a342d7",
+        "type": "cronplus",
+        "z": "d27f5b11c2fa7b08",
+        "d": true,
+        "name": "",
+        "outputField": "payload",
+        "timeZone": "",
+        "persistDynamic": false,
+        "commandResponseMsgOutput": "output1",
+        "outputs": 1,
+        "options": [
+            {
+                "name": "schedule1",
+                "topic": "topic1",
+                "payloadType": "default",
+                "payload": "",
+                "expressionType": "cron",
+                "expression": "0 */5 * * * * *",
+                "location": "",
+                "offset": "0",
+                "solarType": "all",
+                "solarEvents": "sunrise,sunset"
+            }
+        ],
+        "x": 140,
+        "y": 1360,
+        "wires": [
+            [
+                "9851e62d84ba1b29"
+            ]
+        ]
+    },
+    {
         "id": "3180930ea2b7037b",
         "type": "amqp in",
         "z": "b5ec5e315779d1ba",
@@ -23219,125 +23334,6 @@
         "x": 710,
         "y": 320,
         "wires": []
-    },
-    {
-        "id": "9851e62d84ba1b29",
-        "type": "function",
-        "z": "b5ec5e315779d1ba",
-        "name": "dates",
-        "func": "let counter = 0;\nlet payload = [\n];\npayload.push(formatDate(new Date));\n\nsplit();\nreturn null;\n\nfunction split() {\n    if (counter < payload.length) {\n        node.send({\n            payload: payload[counter]\n        });\n        counter++;\n        setTimeout(split, 1000);\n    }\n}\n\nfunction formatDate(date) {\n    const year = date.getFullYear();\n    const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding 1 because getMonth returns zero-based index\n    const day = String(date.getDate()).padStart(2, '0');\n    return `${year}-${month}-${day}`;\n}",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 1240,
-        "wires": [
-            [
-                "50ddafd018a23cf6"
-            ]
-        ]
-    },
-    {
-        "id": "50ddafd018a23cf6",
-        "type": "function",
-        "z": "b5ec5e315779d1ba",
-        "name": "smart-bucket hino position",
-        "func": "let date  = msg.payload;\nmsg.sub = {\n    database: 'smart-bucket',\n    design: 'position',\n    view: 'hino',\n    key: [date]\n}\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 390,
-        "y": 1280,
-        "wires": [
-            [
-                "69575f75d3ea4c3b"
-            ]
-        ]
-    },
-    {
-        "id": "69575f75d3ea4c3b",
-        "type": "subflow:d7ccf53b2b9fe097",
-        "z": "b5ec5e315779d1ba",
-        "name": "",
-        "x": 380,
-        "y": 1320,
-        "wires": [
-            [
-                "f55dae1ec0470854"
-            ]
-        ]
-    },
-    {
-        "id": "f55dae1ec0470854",
-        "type": "function",
-        "z": "b5ec5e315779d1ba",
-        "name": "function 130",
-        "func": "let payload = [];\nlet counter = 0;\nlet data = msg.sub.rows.map(x => x.value);\nmsg.payload = data;\nmsg.headers = {\n    \"x-arguments\": JSON.stringify({ \"x-message-ttl\": 10000 })\n}\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 430,
-        "y": 1360,
-        "wires": [
-            [
-                "8490365266b80667"
-            ]
-        ]
-    },
-    {
-        "id": "8490365266b80667",
-        "type": "amqp out",
-        "z": "b5ec5e315779d1ba",
-        "name": "",
-        "routingkey": "",
-        "iotype": "4",
-        "ioname": "job.tracking.vehicle.position",
-        "server": "e907ba5364e5896f",
-        "x": 700,
-        "y": 1360,
-        "wires": []
-    },
-    {
-        "id": "0355f97705a342d7",
-        "type": "cronplus",
-        "z": "b5ec5e315779d1ba",
-        "d": true,
-        "name": "",
-        "outputField": "payload",
-        "timeZone": "",
-        "persistDynamic": false,
-        "commandResponseMsgOutput": "output1",
-        "outputs": 1,
-        "options": [
-            {
-                "name": "schedule1",
-                "topic": "topic1",
-                "payloadType": "default",
-                "payload": "",
-                "expressionType": "cron",
-                "expression": "0 */5 * * * * *",
-                "location": "",
-                "offset": "0",
-                "solarType": "all",
-                "solarEvents": "sunrise,sunset"
-            }
-        ],
-        "x": 160,
-        "y": 1240,
-        "wires": [
-            [
-                "9851e62d84ba1b29"
-            ]
-        ]
     },
     {
         "id": "7df67e16ee1f868d",
